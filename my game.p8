@@ -27,6 +27,21 @@ function _init()
   
   gravity=0.3,
   friction=0.85
+  
+  --simple camera
+  cam_x=0
+  
+  --map limits
+  map_start=0
+  map_end=1024
+  
+  ---------test----------
+  x1r=0 y1r=0 x2r=0 y2r=0
+  collide_l="no"
+  collide_r="no"
+  collide_u="no"
+  collide_d="no"
+  -----------------------
 end
 
 
@@ -36,12 +51,30 @@ end
 function _update()
   player_update()
   player_animate()
+  
+  --simple camera
+  cam_x=player.x-64+player.w/2)
+  if cam_xmap_start then
+    cam_x=map_start
+  end
+  if cam_x>map_end-128 then
+    cam_x=map_end-128
+  end
+  camera(cam_x,0)
 end
 
 function _draw()
   cls()
   map(0,0)
   spr(player.sp,player.x,player.y,1,1,player.flp)
+  
+  -------test-------
+  rect(x1r,y1r,x2r,y2r,7)
+  print("⬅️= "..collide_l,player.x,player.y-10)
+  print("➡️= "..collide_r,player.x,player.y-16)
+  print("⬆️= "..collide_u,player.x,player.y-22)
+  print("⬇️= "..collide_d,player.x,player.y-28)
+  ------------------
 end
 -->8
 --collisions
@@ -61,17 +94,22 @@ function collide_map(obj,aim,flag)
    x2=x    y2=y+h-1
  
  elseif aim=="right" then
-   x1=x+w    y1=y
-   x2=x+w+1  y2=y+h-1
+   x1=x+w-1   y1=y
+   x2=x+w     y2=y+h-1
  
  elseif aim=="up" then
-   x1=x+1    y1=y-1
-   x2+x+w-1  y2=y
+   x1=x+2    y1=y-1
+   x2+x+w-3  y2=y
  
  elseif aim=="down" then
-   x1=x    y1=y+h
-   x2=x+w  y2=y+h
+   x1=x+2    y1=y+h
+   x2=x+w-3  y2=y+h
  end
+ 
+ -------test-------
+ x1r=x1 y1r=y1
+ x2r=x2 y2r=y2
+ ------------------
  
  --pixels to tiles
  x1/=8   y1/=8
@@ -134,13 +172,24 @@ function player_update()
      player,landed=true
      player.falling=false
      player.dy=0
-     player.y-=(player.y+player.h)%8
+     player.y-=((player.y+player.h+1)%8)-1
+   
+     -----test----
+     collide_d="yes"
+   else 
+     collide_d="no"
+     -------------
    end
   elseif player.dy<o then
     player.jumping=true
     if collide_map(player,"up",1)
       player.dy=0
     end
+    -----test----
+     collide_u="yes"
+   else 
+     collide_u="no"
+     -------------
   end    
   --check collision left and right
   if player.dx<0 then
@@ -149,12 +198,25 @@ function player_update()
     if collide_map(player,"left",1)     
       player.dx=0
      end
+     
+     -----test----
+     collide_l="yes"
+   else 
+     collide_l="no"
+     -------------
+     
    elseif player.dx>0 then
    
      player.dx=limit_speed(player.dx,player.max_dx)
      
      if collide_map(player,"right",1)
        player.dx=0
+       
+       -----test----
+     collide_r="yes"
+   else 
+     collide_r="no"
+     -------------
      end
    end
    
@@ -169,6 +231,14 @@ function player_update()
    
    player.x+=player.dx
    player.y+=player.dy
+   
+   --limit player to map
+   if player.x<map_start then
+     player.x=map_start
+   end
+   if player.x>map_end-player.w then
+     player.x=map_end-player.w
+   end
  end
   
  function player_animate()
@@ -201,9 +271,11 @@ function limit_speed(num,maximum)
   return mid(-maximum,num,maximum)
 end  
 __gfx__
-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00700700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-00700700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000004444400044444000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000002475f5002475f5000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00700700404ffff0404ffef000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000770000006d0000066d60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000006d1d000f0d10f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+007007000f0110f00001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000120000001200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000001002000010020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
