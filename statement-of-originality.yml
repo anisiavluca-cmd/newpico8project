@@ -11,9 +11,9 @@ declaration: >-
 # add as many "name+comment" entries as necessary
 # (or remove it altogether if you haven't collaborated with anyone)
 collaboration:
-  - name:
+  - name: AI Assistant
     comment: >-
-      
+      I used the help of AI to finalize the code.
 
 # add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external code)
